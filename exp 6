@@ -1,0 +1,58 @@
+#include <stdio.h>
+
+struct Process {
+    int processId;
+    int burstTime;
+    int remainingTime;
+};
+
+void roundRobin(struct Process processes[], int n, int timeQuantum) {
+    int currentTime = 0;
+
+    while (1) {
+        int allProcessesCompleted = 1;
+
+        for (int i = 0; i < n; i++) {
+            if (processes[i].remainingTime > 0) {
+                allProcessesCompleted = 0;
+
+                // Execute the process for the time quantum or until completion
+                int executeTime = (processes[i].remainingTime < timeQuantum) ? processes[i].remainingTime : timeQuantum;
+                processes[i].remainingTime -= executeTime;
+
+                // Update current time
+                currentTime += executeTime;
+
+                printf("Executing Process %d for %d units at time %d\n", processes[i].processId, executeTime, currentTime);
+            }
+        }
+
+        // If all processes are completed, break the loop
+        if (allProcessesCompleted)
+            break;
+    }
+}
+
+int main() {
+    int n, timeQuantum;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    struct Process processes[n];
+
+    // Input process details
+    for (int i = 0; i < n; i++) {
+        processes[i].processId = i + 1;
+        printf("Enter burst time for Process %d: ", i + 1);
+        scanf("%d", &processes[i].burstTime);
+        processes[i].remainingTime = processes[i].burstTime;
+    }
+
+    printf("Enter the time quantum: ");
+    scanf("%d", &timeQuantum);
+
+    // Execute processes using Round Robin scheduling
+    roundRobin(processes, n, timeQuantum);
+
+    return 0;
+}
